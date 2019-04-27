@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 import sys
+import time
 
 # print_sudoku(sudoku_dict['oneunsolved']["data"])
 cliques=[[0,1,2,3,4,5,6,7,8],\
@@ -43,56 +44,70 @@ def get_sudoku(data):
             output += line[:-1] + "\n"
         return output[:-1]
 
+def get_possibilities(data, index):
+    # Get the index of all of the cliques of the current cell
+    # Removes repetition with sets
+    all_cliques = set()
+    for clique in cliques:
+        if index in clique:
+            all_cliques = all_cliques.union(clique)
+    all_cliques.remove(index)
+    taken_values = set([data[x] for x in all_cliques])
+    possibilities = all_nums.difference(taken_values)
+    return possibilities
+
 def fill_obvious(data):
     has_obvious = True
     while has_obvious:
         has_obvious = False
         for index in range(81):
             if data[index] == 0:
-                all_cliques = set()
-                for clique in cliques:
-                    if index in clique:
-                        all_cliques = all_cliques.union(clique)
-                all_cliques.remove(index)
-                taken_values = set([data[x] for x in all_cliques])
-                possibilities = all_nums.difference(taken_values)
+                possibilities = get_possibilities(data,index)
                 if len(possibilities) == 1:
                     data[index] = possibilities.pop()
                     has_obvious = True
     return data
 
+def get_next_index(data):
+    best_index = -1
+    least_num_possible = 10
+    for i in range(81):
+        if data[i] == 0:
+            num_possible = len(get_possibilities(data,i))
+            if num_possible < least_num_possible:
+                best_index = i
+                least_num_possible = num_possible
+    return best_index
 
 def solve(data, mode):
     past = []
     index = 0
+    if mode == "2":
+        index = get_next_index(data)
     current_possibilities = set()
     has_previous_possiblility = False
     ntrials = 0
     nback = 0
-    # While the current cell is not after the last cell
-    while index != 81:
-        if mode == "1":
+    while True:
+        if (mode != "2" and index == 81) or (mode == "2" and index==-1):
+            break
+        if mode != "0":
             data = fill_obvious(data)
         ntrials += 1
         # if ntrials % 10000 == 0: print ('ntrials',ntrials)
         if data[index] != 0:
-            index += 1
+            if mode == "2":
+                index = get_next_index(data)
+            else:
+                index += 1
             continue
-        # Get the index of all of the cliques of the current cell
-        # Removes repetition with sets
-        all_cliques = set()
-        for clique in cliques:
-            if index in clique:
-                all_cliques = all_cliques.union(clique)
-        all_cliques.remove(index)
         # If backtracking, then use the previous list of possibilities
         # If exploring new territory, then make the new list of possibilities
         possibilities = None
         if has_previous_possiblility:
             possibilities = current_possibilities
         else:
-            taken_values = set([data[x] for x in all_cliques])
-            possibilities = all_nums.difference(taken_values)
+            possibilities = get_possibilities(data,index)
         # Checks if it ran out of possibilities
         # Reverts to a previous state
         # Else, insert a random number from the list of possibilities
@@ -113,48 +128,44 @@ def solve(data, mode):
             data[index] = test_insert
             current_possibilities = set()
             has_previous_possiblility = False
-            index += 1
-    print(nback)
+            if mode == "2":
+                index = get_next_index(data)
+            else:
+                index += 1
+    print("backtracks:",nback)
     return data
 
-# s.print_sudoku()
-f = open(sys.argv[1],'r')
-lines = f.read().split("\n")
-sudoku_dict = {}
-current_dict = {"data":[]}
-got_desc = False
 
-for i in range(len(lines)):
-    if not got_desc:
-        current_dict["name"] = lines[i]
-        got_desc = True
-    elif lines[i] == '':
-        sudoku_dict[current_dict["name"]] = current_dict
-        current_dict = {"data":[]}
-        got_desc = False
-    else:
-        nums = lines[i].split(",")
-        current_arr = []
-        for i in range(len(nums)):
-            if nums[i] == '_':
-                current_arr.append(0)
+def getBoard(name):
+    f = open(sys.argv[1],'r')
+    lines = f.read().split("\n")
+    rel_index =  lines.index(name)
+    relevant_data = lines[rel_index+1:rel_index+10]
+    data = []
+    for sudoku_line in relevant_data:
+        for num in sudoku_line.split(","):
+            if num == "_":
+                data.append(0)
             else:
-                current_arr.append(int(nums[i]))
-        current_dict["data"] += current_arr
+                data.append(int(num))
+    return data
 
-solved = ''
+
+write_output = ''
 
 # Fourth Argument
 # 0: Naive Solution
-# 1: Fill in all obvious ones first
+# 1: Fill in all obvious ones first\
+# 2: Choose squares with least open spots
 #
-#
-#
-#
-solved = get_sudoku(solve(sudoku_dict[sys.argv[3]]['data'], sys.argv[4]))
+s = time.time()
+solved_board = solve(getBoard(sys.argv[3]), sys.argv[4])
+print(time.time() - s,"seconds")
+
+write_output= get_sudoku(solved_board)
 
 f = open(sys.argv[2],'w')
-f.write(solved)
+f.write(write_output)
 f.close()
 
 # backtracking results

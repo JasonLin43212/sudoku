@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Results for Sudoku</title>
+  </head>
+  <body>
+      <h1>Jason Lin (Period 10) Sudoku Solver</h1>
+      <table border="1">
+          <tr>
+              <td class="name">Naive</td>
+              <td>
+                  Start at the beginning (upper left corner) and find the next open cell. Choose one of
+                  the possibilities of that cell and place it. Go to the next open cell and backtrack when
+                  there are no possibilities for an open cell.
+              </td>
+          </tr>
+          <tr>
+              <td class="name">Smart</td>
+              <td>
+                  Before solving, place all of the values in the obvious cells (cells with only one possibility) until there are no more
+                  obvious cells. Then find the next open cell and pick one of the possibilities into it. This time, after every guess,
+                  try to fill in all of the obvious cells. Backtrack condition same as naive solution.
+              </td>
+          </tr>
+          <tr>
+              <td class="name">Even Smarter</td>
+              <td>
+                  Instead of choosing the next open cell, choose the cell that has the least number of possibilities. As with the smart method,
+                  the algorithm will place in values for all of the obvious cells before the start of the search and after every insertion.
+              </td>
+          </tr>
+      </table>
+      <br><br>
+      <table border="1">
+          <tr>
+              <th></th>
+              <th>Naive</th>
+              <th>Smart</th>
+              <th>Even Smarter</th>
+          </tr>
+          <tr>
+              <td class="name">A1</td>
+              <td>time = 0.001547 secs, backtracks = 120</td>
+              <td>t = 0.001541, b = 0, ratio (Naive/Smart) = ∞</td>
+              <td>t = 0.001476, b = 0, r = ∞</td>
+          </tr>
+          <tr>
+              <td class="name">A2</td>
+              <td>t = 0.199, b = 31381</td>
+              <td>t = 0.315, b = 297, r = 105</td>
+              <td>t = 0.0291, b = 11, r = 2852</td>
+          </tr>
+          <tr>
+              <td class="name">A3</td>
+              <td>t = 0.0896, b = 12,787</td>
+              <td>t = 0.205, b = 177, r = 72</td>
+              <td>t = 0.127, b = 96, r = 133</td>
+          </tr>
+          <tr>
+              <td class="name">A4</td>
+              <td>t = 0.271, b = 42,170</td>
+              <td>t = 0.356, b = 315, r =133</td>
+              <td>t = 0.0104, b = 1, r = 42,170</td>
+          </tr>
+          <tr>
+              <td class="name">A5</td>
+              <td>t = 0.0503, b = 6,286</td>
+              <td>t = 0.0196, b = 8, r = 785</td>
+              <td>t = 0.0214, b = 7, r = 898</td>
+          </tr>
+          <tr>
+              <td class="name">A6</td>
+              <td>t = 0.385, b = 61,904</td>
+              <td>t = 0.692, b = 811, r = 76</td>
+              <td>t = 0.296, b = 239, r = 259</td>
+          </tr>
+          <tr>
+              <td class="name">A7</td>
+              <td>t = 20.874, b = 2,493,808</td>
+              <td>t = 63.647, b = 54,358, r = 45</td>
+              <td>t = 8.788, b = 5,318, r = 468</td>
+          </tr>
+          <tr>
+              <td class="name">A8</td>
+              <td>t = 180.567, b = 18,994,973</td>
+              <td>t = 274.148, b = 278,490, r = 68</td>
+              <td>t = 10.552, b = 5,523, r = 3439</td>
+          </tr>
+      </table>
+  </body>
+  <style media="screen">
+      h1{
+          text-align: center;
+      }
+      table{
+          text-align: center;
+          width: 65%;
+          margin: 0 auto;
+      }
+      .name{
+          font-weight: bold;
+      }
+  </style>
+</html>
