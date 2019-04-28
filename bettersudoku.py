@@ -32,6 +32,8 @@ cliques=[[0,1,2,3,4,5,6,7,8],\
 [60,61,62,69,70,71,78,79,80]\
 ]
 all_nums = set([1,2,3,4,5,6,7,8,9])
+
+# Takes in the sudoku data (array) and turns it into the string to write to output
 def get_sudoku(data):
         temp_arr = []
         for i in range(9):
@@ -44,6 +46,7 @@ def get_sudoku(data):
             output += line[:-1] + "\n"
         return output[:-1]
 
+# Gets all of the possibilities at a cell given the data
 def get_possibilities(data, index):
     # Get the index of all of the cliques of the current cell
     # Removes repetition with sets
@@ -56,6 +59,7 @@ def get_possibilities(data, index):
     possibilities = all_nums.difference(taken_values)
     return possibilities
 
+# Fills in all of the cells that have 1 possibility until there are no more obvious cells
 def fill_obvious(data):
     has_obvious = True
     while has_obvious:
@@ -68,6 +72,8 @@ def fill_obvious(data):
                     has_obvious = True
     return data
 
+# Returns the index of the first cell with the least number of possibilities given the data
+# Returns -1 if the board is solved
 def get_next_index(data):
     best_index = -1
     least_num_possible = 10
@@ -79,6 +85,7 @@ def get_next_index(data):
                 least_num_possible = num_possible
     return best_index
 
+# Solves the sudoku given the data and the smartitude
 def solve(data, mode):
     past = []
     index = 0
@@ -89,6 +96,7 @@ def solve(data, mode):
     ntrials = 0
     nback = 0
     while True:
+        # Solve conditions
         if (mode != "2" and index == 81) or (mode == "2" and index==-1):
             break
         if mode != "0":
@@ -135,7 +143,7 @@ def solve(data, mode):
     print("backtracks:",nback)
     return data
 
-
+# Reads in the board and formats it into an array
 def getBoard(name):
     f = open(sys.argv[1],'r')
     lines = f.read().split("\n")
@@ -155,7 +163,7 @@ write_output = ''
 
 # Fourth Argument
 # 0: Naive Solution
-# 1: Fill in all obvious ones first\
+# 1: Fill in all obvious ones first
 # 2: Choose squares with least open spots
 #
 s = time.time()
