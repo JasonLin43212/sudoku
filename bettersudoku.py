@@ -167,8 +167,3 @@ write_output= get_sudoku(solved_board)
 f = open(sys.argv[2],'w')
 f.write(write_output)
 f.close()
-
-# backtracking results
-# A1: 120
-# A2: 31381
-# A3: 12787
